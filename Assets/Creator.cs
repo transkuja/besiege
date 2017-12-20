@@ -24,6 +24,7 @@ public class Creator : MonoBehaviour {
     Vector3 instantiateCenter;
 
     string savefileName = "/save.txt";
+    public float mouseScrollSensitivity;
 
     void Start () {
         vehicle = new GameObject("Vehicle");
@@ -56,10 +57,12 @@ public class Creator : MonoBehaviour {
                 Destroy(hit.transform.gameObject);
         }
 
-        Camera.main.transform.position +=
-            (Camera.main.transform.right * Input.GetAxisRaw("Horizontal") +
-            Camera.main.transform.forward * Input.GetAxisRaw("Vertical"))
-            * Time.deltaTime * cameraSpeed;
+        freelookCamera.m_XAxis.Value += -Input.GetAxisRaw("Horizontal");
+
+        //Camera.main.transform.position +=
+        //    (Camera.main.transform.right * Input.GetAxisRaw("Horizontal") +
+        //    Camera.main.transform.forward * Input.GetAxisRaw("Vertical"))
+        //    * Time.deltaTime * cameraSpeed;
 
         Camera.main.transform.LookAt(vehicle.transform);
 
@@ -70,6 +73,12 @@ public class Creator : MonoBehaviour {
             Camera.main.transform.Rotate(Vector3.up, Input.GetAxisRaw("Mouse X"));
 
         }
+
+        for (int i = 0; i < 3; i++)
+        {
+            freelookCamera.m_Orbits[i].m_Radius = Mathf.Clamp(freelookCamera.m_Orbits[i].m_Radius - Input.GetAxisRaw("Mouse ScrollWheel") * mouseScrollSensitivity, 10, 40);
+        }
+
     }
 
     private void OnDrawGizmos()
