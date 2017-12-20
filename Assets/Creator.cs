@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Cinemachine;
 
 public class Creator : MonoBehaviour {
 
     public PrefabUtils prefabUtils;
 
-    GameObject vehicle;
+    public GameObject vehicle;
+    public CinemachineFreeLook freelookCamera;
+
     GameObject core;
     Ray ray;
     bool drawGizmos = false;
@@ -57,6 +60,8 @@ public class Creator : MonoBehaviour {
             (Camera.main.transform.right * Input.GetAxisRaw("Horizontal") +
             Camera.main.transform.forward * Input.GetAxisRaw("Vertical"))
             * Time.deltaTime * cameraSpeed;
+
+        Camera.main.transform.LookAt(vehicle.transform);
 
         if (Input.GetKey(KeyCode.LeftControl))
         {
