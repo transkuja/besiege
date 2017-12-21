@@ -7,6 +7,7 @@ public class PrefabUtils : MonoBehaviour {
     public GameObject coreBlock;
 
     public List<GameObject> blocks;
+    //public List<GameObject> zeroGBlocks;
 
     private void Awake()
     {
@@ -16,6 +17,11 @@ public class PrefabUtils : MonoBehaviour {
             go.GetComponent<Bloc>().data.blockType = index;
             index++;
         }
+        //foreach (GameObject go in zeroGBlocks)
+        //{
+        //    go.GetComponent<Bloc>().data.blockType = index;
+        //    index++;
+        //}
     }
 
     public Vector3 GetExtents(int _index)

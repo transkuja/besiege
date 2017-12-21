@@ -40,11 +40,18 @@ public class Creator : MonoBehaviour {
         {
             if (prefabUtils.blocks[currentlySelectedBlock].GetComponent<BoxCollider>() != null)
             {
+                Vector3 newPosition = GetPosition();
+                if (prefabUtils.blocks[currentlySelectedBlock].transform.childCount > 0) // Ugly, need a better handling of reactors post 1st proto
+                {
+                    if (Physics.Raycast(newPosition, Vector3.down, prefabUtils.GetExtents(currentlySelectedBlock).y +0.5f))
+                        return;
+                }
+
                 instantiateCenter = GetPosition();
                 Collider[] overlapColliders = Physics.OverlapBox(instantiateCenter, prefabUtils.GetExtents(currentlySelectedBlock) * 0.95f);
                 if (overlapColliders.Length == 0)
                 {
-                    GameObject block = Instantiate(prefabUtils.blocks[currentlySelectedBlock], GetPosition(), Quaternion.identity, vehicle.transform);
+                    GameObject block = Instantiate(prefabUtils.blocks[currentlySelectedBlock], newPosition, Quaternion.identity, vehicle.transform);
                     block.GetComponent<Bloc>().data.position = transform.position;
                     block.GetComponent<Bloc>().data.rotation = transform.rotation;
                 }
@@ -66,17 +73,9 @@ public class Creator : MonoBehaviour {
 
         Camera.main.transform.LookAt(vehicle.transform);
 
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            // TODO: Gimbal lock
-            Camera.main.transform.Rotate(Camera.main.transform.right, Input.GetAxisRaw("Mouse Y"));
-            Camera.main.transform.Rotate(Vector3.up, Input.GetAxisRaw("Mouse X"));
-
-        }
-
         for (int i = 0; i < 3; i++)
         {
-            freelookCamera.m_Orbits[i].m_Radius = Mathf.Clamp(freelookCamera.m_Orbits[i].m_Radius - Input.GetAxisRaw("Mouse ScrollWheel") * mouseScrollSensitivity, 10, 40);
+            freelookCamera.m_Orbits[i].m_Radius = Mathf.Clamp(freelookCamera.m_Orbits[i].m_Radius - Input.GetAxisRaw("Mouse ScrollWheel") * mouseScrollSensitivity, 7, 40);
         }
 
     }
@@ -111,6 +110,7 @@ public class Creator : MonoBehaviour {
     {
         vehicle.AddComponent<Rigidbody>();
         vehicle.AddComponent<VehicleController>();
+        GameState.isInCreatorMode = false;
         enabled = false;
     }
 
@@ -125,6 +125,7 @@ public class Creator : MonoBehaviour {
 
     public void BackToCreation()
     {
+        GameState.isInCreatorMode = true;
         enabled = true;
         Destroy(vehicle.GetComponent<Rigidbody>());
         Destroy(vehicle.GetComponent<VehicleController>());
