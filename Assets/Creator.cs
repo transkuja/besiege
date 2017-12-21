@@ -129,6 +129,7 @@ public class Creator : MonoBehaviour {
         Destroy(vehicle.GetComponent<Rigidbody>());
         Destroy(vehicle.GetComponent<VehicleController>());
         vehicle.transform.localPosition = Vector3.zero;
+        vehicle.transform.localRotation = Quaternion.identity;
     }
 
     public void SaveButton()
