@@ -9,7 +9,8 @@ public class Creator : MonoBehaviour {
     public PrefabUtils prefabUtils;
 
     public GameObject vehicle;
-    public CinemachineFreeLook freelookCamera;
+    public CinemachineFreeLook freelookCameraCreator;
+    public CinemachineFreeLook freelookCameraVehicle;
 
     GameObject core;
     Ray ray;
@@ -32,6 +33,9 @@ public class Creator : MonoBehaviour {
 	}
 	
 	void Update () {
+        if (!GameState.isInCreatorMode)
+            return;
+
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         drawGizmos = Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Block"));
@@ -64,7 +68,7 @@ public class Creator : MonoBehaviour {
                 Destroy(hit.transform.gameObject);
         }
 
-        freelookCamera.m_XAxis.Value += -Input.GetAxisRaw("Horizontal");
+        freelookCameraCreator.m_XAxis.Value += -Input.GetAxisRaw("Horizontal");
 
         //Camera.main.transform.position +=
         //    (Camera.main.transform.right * Input.GetAxisRaw("Horizontal") +
@@ -75,7 +79,7 @@ public class Creator : MonoBehaviour {
 
         for (int i = 0; i < 3; i++)
         {
-            freelookCamera.m_Orbits[i].m_Radius = Mathf.Clamp(freelookCamera.m_Orbits[i].m_Radius - Input.GetAxisRaw("Mouse ScrollWheel") * mouseScrollSensitivity, 7, 40);
+            freelookCameraCreator.m_Orbits[i].m_Radius = Mathf.Clamp(freelookCameraCreator.m_Orbits[i].m_Radius - Input.GetAxisRaw("Mouse ScrollWheel") * mouseScrollSensitivity, 7, 40);
         }
 
     }
@@ -110,6 +114,9 @@ public class Creator : MonoBehaviour {
     {
         vehicle.AddComponent<Rigidbody>();
         vehicle.AddComponent<VehicleController>();
+        vehicle.GetComponent<VehicleController>().InitController(freelookCameraVehicle);
+        freelookCameraCreator.enabled = false;
+        freelookCameraVehicle.enabled = true;
         GameState.isInCreatorMode = false;
         enabled = false;
     }
@@ -131,6 +138,8 @@ public class Creator : MonoBehaviour {
         Destroy(vehicle.GetComponent<VehicleController>());
         vehicle.transform.localPosition = Vector3.zero;
         vehicle.transform.localRotation = Quaternion.identity;
+        freelookCameraCreator.enabled = true;
+        freelookCameraVehicle.enabled = false;
     }
 
     public void SaveButton()
