@@ -12,7 +12,7 @@ public class ZeroGBlock : MonoBehaviour {
             if (rb == null)
                 rb = GetComponentInParent<Rigidbody>();
 
-            if (!Physics.Raycast(transform.position + 0.25f * Vector3.down, Vector3.down, 2.0f))
+            if (!Physics.Raycast(transform.position + 0.25f * Vector3.down, Vector3.down, 1.0f))
                 return;
 
             rb.AddForceAtPosition(Vector3.up * GameState.repulseStrength, transform.position);

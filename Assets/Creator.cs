@@ -28,7 +28,7 @@ public class Creator : MonoBehaviour {
     public float mouseScrollSensitivity;
 
     void Start () {
-        vehicle = new GameObject("Vehicle");
+        //vehicle = new GameObject("Vehicle");
         core = Instantiate(prefabUtils.coreBlock, vehicle.transform);
 	}
 	
@@ -47,7 +47,7 @@ public class Creator : MonoBehaviour {
                 Vector3 newPosition = GetPosition();
                 if (prefabUtils.blocks[currentlySelectedBlock].transform.childCount > 0) // Ugly, need a better handling of reactors post 1st proto
                 {
-                    if (Physics.Raycast(newPosition, Vector3.down, prefabUtils.GetExtents(currentlySelectedBlock).y +0.5f))
+                    if (Physics.Raycast(newPosition, Vector3.down, prefabUtils.GetExtents(currentlySelectedBlock).y + 0.5f))
                         return;
                 }
 
@@ -64,8 +64,8 @@ public class Creator : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(1) && drawGizmos)
         {
-            if (hit.transform.tag != "Core")
-                Destroy(hit.transform.gameObject);
+            if (hit.collider.transform.tag != "Core")
+                Destroy(hit.collider.transform.gameObject);
         }
 
         freelookCameraCreator.m_XAxis.Value += -Input.GetAxisRaw("Horizontal");
@@ -99,7 +99,7 @@ public class Creator : MonoBehaviour {
                 hit.normal.x * (hit.collider.bounds.extents.x + prefabUtils.GetExtents(currentlySelectedBlock).x), 
                 hit.normal.y * (hit.collider.bounds.extents.y + prefabUtils.GetExtents(currentlySelectedBlock).y), 
                 hit.normal.z * (hit.collider.bounds.extents.z + prefabUtils.GetExtents(currentlySelectedBlock).z)) 
-            + hit.transform.position;
+            + hit.collider.transform.position;
 
         return newPos;
 
@@ -112,11 +112,11 @@ public class Creator : MonoBehaviour {
 
     public void Build()
     {
-        vehicle.AddComponent<Rigidbody>();
+        vehicle.GetComponent<Rigidbody>().useGravity = true;
         vehicle.AddComponent<VehicleController>();
         vehicle.GetComponent<VehicleController>().InitController(freelookCameraVehicle);
-        freelookCameraCreator.enabled = false;
-        freelookCameraVehicle.enabled = true;
+        freelookCameraCreator.gameObject.SetActive(false);
+        freelookCameraVehicle.gameObject.SetActive(true);
         GameState.isInCreatorMode = false;
         enabled = false;
     }
@@ -134,12 +134,12 @@ public class Creator : MonoBehaviour {
     {
         GameState.isInCreatorMode = true;
         enabled = true;
-        Destroy(vehicle.GetComponent<Rigidbody>());
+        vehicle.GetComponent<Rigidbody>().useGravity = false;
         Destroy(vehicle.GetComponent<VehicleController>());
         vehicle.transform.localPosition = Vector3.zero;
         vehicle.transform.localRotation = Quaternion.identity;
-        freelookCameraCreator.enabled = true;
-        freelookCameraVehicle.enabled = false;
+        freelookCameraCreator.gameObject.SetActive(true);
+        freelookCameraVehicle.gameObject.SetActive(false);
     }
 
     public void SaveButton()
