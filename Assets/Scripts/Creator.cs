@@ -14,11 +14,13 @@ public class Creator : MonoBehaviour {
 
     GameObject core;
     Ray ray;
-    bool drawGizmos = false;
+    bool hasHitAPotentialTarget = false;
+
     RaycastHit hit;
 
     // TODO: implement this
-    int currentlySelectedBlock = 0;
+    int currentlySelectedBlockIndex = 0;
+    GameObject currentlySelectedBlock;
 
     public float cameraSpeed = 50.0f;
 
@@ -30,39 +32,76 @@ public class Creator : MonoBehaviour {
     void Start () {
         //vehicle = new GameObject("Vehicle");
         core = Instantiate(prefabUtils.coreBlock, vehicle.transform);
-	}
-	
-	void Update () {
+        CreatePreviewBlock();
+    }
+
+    void Update () {
         if (!GameState.isInCreatorMode)
             return;
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        drawGizmos = Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Block"));
+        hasHitAPotentialTarget = Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Block"));
 
-        if (Input.GetMouseButtonDown(0) && drawGizmos)
+        if (hasHitAPotentialTarget)
         {
-            if (prefabUtils.blocks[currentlySelectedBlock].GetComponent<BoxCollider>() != null)
+            if (prefabUtils.blocks[currentlySelectedBlockIndex].GetComponent<BoxCollider>() != null)
             {
                 Vector3 newPosition = GetPosition();
-                if (prefabUtils.blocks[currentlySelectedBlock].transform.childCount > 0) // Ugly, need a better handling of reactors post 1st proto
+                if (prefabUtils.blocks[currentlySelectedBlockIndex].transform.childCount > 0) // Ugly, need a better handling of reactors post 1st proto
                 {
-                    if (Physics.Raycast(newPosition, Vector3.down, prefabUtils.GetExtents(currentlySelectedBlock).y + 0.5f))
+                    // Check if there's nothing under the zero gravity module we want to put
+                    if (Physics.Raycast(newPosition, Vector3.down, prefabUtils.GetExtents(currentlySelectedBlockIndex).y + 0.5f))
+                    {
+                        currentlySelectedBlock.SetActive(false);
                         return;
+                    }
+                }
+
+                // Makes sure we do not something under a zero gravity module
+                if (hit.collider.GetComponentInChildren<ZeroGBlock>() != null)
+                {
+                    currentlySelectedBlock.SetActive(false);
+                    return;
                 }
 
                 instantiateCenter = GetPosition();
-                Collider[] overlapColliders = Physics.OverlapBox(instantiateCenter, prefabUtils.GetExtents(currentlySelectedBlock) * 0.95f);
-                if (overlapColliders.Length == 0)
+                Collider[] overlapColliders = Physics.OverlapBox(instantiateCenter, prefabUtils.GetExtents(currentlySelectedBlockIndex) * 0.95f);
+                if (overlapColliders.Length > 0)
                 {
-                    GameObject block = Instantiate(prefabUtils.blocks[currentlySelectedBlock], newPosition, Quaternion.identity, vehicle.transform);
-                    block.GetComponent<Bloc>().data.position = transform.position;
-                    block.GetComponent<Bloc>().data.rotation = transform.rotation;
+                    currentlySelectedBlock.SetActive(false);
+                    return;
+                    // Deprecated
+                    //GameObject block = Instantiate(prefabUtils.blocks[currentlySelectedBlockIndex], newPosition, Quaternion.identity, vehicle.transform);
+
+                }
+
+                // Show the position where the block will be put
+                currentlySelectedBlock.transform.position = newPosition;
+                currentlySelectedBlock.transform.rotation = Quaternion.identity;
+                currentlySelectedBlock.SetActive(true);
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    // Put the selected block on the vehicle
+                    currentlySelectedBlock.GetComponent<BoxCollider>().enabled = true;
+                    Color oldColor = currentlySelectedBlock.GetComponent<MeshRenderer>().material.color;
+                    currentlySelectedBlock.GetComponent<MeshRenderer>().material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1.0f);
+                    currentlySelectedBlock.GetComponent<Bloc>().data.position = transform.position;
+                    currentlySelectedBlock.GetComponent<Bloc>().data.rotation = transform.rotation;
+
+                    // Create a new preview block
+                    CreatePreviewBlock();
                 }
             }
         }
+        else
+        {
+            // Deactivate preview if no potential target
+            currentlySelectedBlock.SetActive(false);
+        }
 
-        if (Input.GetMouseButtonDown(1) && drawGizmos)
+        if (Input.GetMouseButtonDown(1) && hasHitAPotentialTarget)
         {
             if (hit.collider.transform.tag != "Core")
                 Destroy(hit.collider.transform.gameObject);
@@ -84,21 +123,12 @@ public class Creator : MonoBehaviour {
 
     }
 
-    private void OnDrawGizmos()
-    {
-        if (drawGizmos)
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawCube(hit.point, Vector3.one);
-        }
-    }
-
     Vector3 GetPosition()
     {
         Vector3 newPos = new Vector3(
-                hit.normal.x * (hit.collider.bounds.extents.x + prefabUtils.GetExtents(currentlySelectedBlock).x), 
-                hit.normal.y * (hit.collider.bounds.extents.y + prefabUtils.GetExtents(currentlySelectedBlock).y), 
-                hit.normal.z * (hit.collider.bounds.extents.z + prefabUtils.GetExtents(currentlySelectedBlock).z)) 
+                hit.normal.x * (hit.collider.bounds.extents.x + prefabUtils.GetExtents(currentlySelectedBlockIndex).x), 
+                hit.normal.y * (hit.collider.bounds.extents.y + prefabUtils.GetExtents(currentlySelectedBlockIndex).y), 
+                hit.normal.z * (hit.collider.bounds.extents.z + prefabUtils.GetExtents(currentlySelectedBlockIndex).z)) 
             + hit.collider.transform.position;
 
         return newPos;
@@ -107,7 +137,10 @@ public class Creator : MonoBehaviour {
 
     public void ChangeBlock(int _newBlockIndex)
     {
-        currentlySelectedBlock = _newBlockIndex;
+        currentlySelectedBlockIndex = _newBlockIndex;
+
+        if (currentlySelectedBlock != null) DestroyImmediate(currentlySelectedBlock);
+        CreatePreviewBlock();
     }
 
     public void Build()
@@ -168,5 +201,15 @@ public class Creator : MonoBehaviour {
 
         ResetButton();
         vehicleToLoad.CreateVehicle(vehicle.transform);
+    }
+
+    private void CreatePreviewBlock()
+    {
+        currentlySelectedBlock = Instantiate(prefabUtils.blocks[currentlySelectedBlockIndex], Vector3.zero, Quaternion.identity, vehicle.transform);
+        foreach (Collider c in currentlySelectedBlock.GetComponentsInChildren<Collider>())
+            c.enabled = false;
+        Color oldColor = currentlySelectedBlock.GetComponent<MeshRenderer>().material.color;
+        currentlySelectedBlock.GetComponent<MeshRenderer>().material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.3f);
+        currentlySelectedBlock.SetActive(false);
     }
 }
