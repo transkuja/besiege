@@ -212,4 +212,16 @@ public class Creator : MonoBehaviour {
         currentlySelectedBlock.GetComponent<MeshRenderer>().material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.3f);
         currentlySelectedBlock.SetActive(false);
     }
+
+    public void InvertXAxis()
+    {
+        freelookCameraCreator.m_XAxis.m_InvertAxis = !freelookCameraCreator.m_XAxis.m_InvertAxis;
+        freelookCameraVehicle.m_XAxis.m_InvertAxis = !freelookCameraVehicle.m_XAxis.m_InvertAxis;
+    }
+
+    public void InvertYAxis()
+    {
+        freelookCameraCreator.m_YAxis.m_InvertAxis = !freelookCameraCreator.m_YAxis.m_InvertAxis;
+        freelookCameraVehicle.m_YAxis.m_InvertAxis = !freelookCameraVehicle.m_YAxis.m_InvertAxis;
+    }
 }
