@@ -30,7 +30,6 @@ public class Creator : MonoBehaviour {
     public float mouseScrollSensitivity;
 
     void Start () {
-        //vehicle = new GameObject("Vehicle");
         core = Instantiate(prefabUtils.coreBlock, vehicle.transform);
         CreatePreviewBlock();
     }
@@ -71,8 +70,6 @@ public class Creator : MonoBehaviour {
                 {
                     currentlySelectedBlock.SetActive(false);
                     return;
-                    // Deprecated
-                    //GameObject block = Instantiate(prefabUtils.blocks[currentlySelectedBlockIndex], newPosition, Quaternion.identity, vehicle.transform);
 
                 }
 
@@ -108,11 +105,6 @@ public class Creator : MonoBehaviour {
         }
 
         freelookCameraCreator.m_XAxis.Value += -Input.GetAxisRaw("Horizontal");
-
-        //Camera.main.transform.position +=
-        //    (Camera.main.transform.right * Input.GetAxisRaw("Horizontal") +
-        //    Camera.main.transform.forward * Input.GetAxisRaw("Vertical"))
-        //    * Time.deltaTime * cameraSpeed;
 
         Camera.main.transform.LookAt(vehicle.transform);
 
