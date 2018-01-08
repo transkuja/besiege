@@ -38,6 +38,9 @@ public class Creator : MonoBehaviour {
         if (!GameState.isInCreatorMode)
             return;
 
+        if (currentlySelectedBlock == null)
+            return;
+
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         hasHitAPotentialTarget = Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Block"));
@@ -84,8 +87,8 @@ public class Creator : MonoBehaviour {
                     currentlySelectedBlock.GetComponent<BoxCollider>().enabled = true;
                     Color oldColor = currentlySelectedBlock.GetComponent<MeshRenderer>().material.color;
                     currentlySelectedBlock.GetComponent<MeshRenderer>().material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1.0f);
-                    currentlySelectedBlock.GetComponent<Bloc>().data.position = transform.position;
-                    currentlySelectedBlock.GetComponent<Bloc>().data.rotation = transform.rotation;
+                    currentlySelectedBlock.GetComponent<Bloc>().data.position = currentlySelectedBlock.transform.position;
+                    currentlySelectedBlock.GetComponent<Bloc>().data.rotation = currentlySelectedBlock.transform.rotation;
 
                     // Create a new preview block
                     CreatePreviewBlock();
@@ -169,11 +172,12 @@ public class Creator : MonoBehaviour {
 
     public void SaveButton()
     {
+        Destroy(currentlySelectedBlock);
         Vehicle vehicleToSave = new Vehicle(vehicle.transform.childCount - 1);
 
         for (int i = 1; i < vehicle.transform.childCount; i++)
         {
-            vehicleToSave.blocks[i - 1] = vehicle.transform.GetChild(i).GetComponent<Bloc>().data;
+            vehicleToSave.blocks[i - 1].SetData(vehicle.transform.GetChild(i).GetComponent<Bloc>().data);
         }
 
         StreamWriter sw = File.CreateText(Application.persistentDataPath + savefileName);
@@ -184,9 +188,12 @@ public class Creator : MonoBehaviour {
 
     public void LoadButton()
     {
+        Destroy(currentlySelectedBlock);
+
         if (!File.Exists(Application.persistentDataPath + savefileName))
             return;
-        
+
+        Debug.Log("Start load");
         
         Vehicle vehicleToLoad = new Vehicle();
         vehicleToLoad.Deserialize(File.ReadAllText(Application.persistentDataPath + savefileName));

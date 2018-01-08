@@ -14,7 +14,7 @@ public enum Anchors
 }
 
 [System.Serializable]
-public class BlocData
+public struct BlocData
 {
     [SerializeField]
     public Vector3 position;
@@ -22,6 +22,12 @@ public class BlocData
     public Quaternion rotation;
     [SerializeField]
     public int blockType;
+
+    public void SetData(BlocData _data)
+    {
+        position = new Vector3(Mathf.Round(_data.position.x), Mathf.Round(_data.position.y), Mathf.Round(_data.position.z));
+        rotation = new Quaternion(Mathf.Round(_data.rotation.x), Mathf.Round(_data.rotation.y), Mathf.Round(_data.rotation.z), Mathf.Round(_data.rotation.w));
+    }
 
     public string Serialize()
     {
@@ -64,7 +70,6 @@ public class Vehicle
         string result = vehicleSize.ToString();
         for (int i = 0; i < vehicleSize; i++)
         {
-            Debug.Log(i);
             result += "[" + blocks[i].Serialize();
         }
         return result;
@@ -78,20 +83,27 @@ public class Vehicle
         blocks = new BlocData[vehicleSize];
 
         for (int i = 1; i < dataSplit.Length; i++)
+        {
             blocks[i - 1].Deserialize(dataSplit[i]);
+        }
     }
 
     public void CreateVehicle(Transform _parent)
     {
         Creator creator = GameObject.FindObjectOfType<Creator>();
-        //GameObject.Instantiate(creator.prefabUtils.coreBlock, _parent);
 
-        for (int i = 0; i < vehicleSize; i++)
-            GameObject.Instantiate(creator.prefabUtils.blocks[blocks[i].blockType], _parent);
+        for (int i = 0; i < vehicleSize - 1; i++)
+        {
+            GameObject vehiclePart = GameObject.Instantiate(creator.prefabUtils.blocks[blocks[i].blockType], _parent);
+            vehiclePart.transform.localPosition = blocks[i].position;
+            vehiclePart.transform.localRotation = blocks[i].rotation;
+            vehiclePart.GetComponent<Bloc>().data.SetData(blocks[i]);
+        }
 
     }
 }
 
+[System.Serializable]
 public class Bloc : MonoBehaviour {
 
     [SerializeField]
