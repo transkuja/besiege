@@ -25,8 +25,11 @@ public struct BlocData
 
     public void SetData(BlocData _data)
     {
-        position = new Vector3(Mathf.Round(_data.position.x), Mathf.Round(_data.position.y), Mathf.Round(_data.position.z));
-        rotation = new Quaternion(Mathf.Round(_data.rotation.x), Mathf.Round(_data.rotation.y), Mathf.Round(_data.rotation.z), Mathf.Round(_data.rotation.w));
+        //position = new Vector3(Mathf.Round(_data.position.x), Mathf.Round(_data.position.y), Mathf.Round(_data.position.z));
+        //rotation = new Quaternion(Mathf.Round(_data.rotation.x), Mathf.Round(_data.rotation.y), Mathf.Round(_data.rotation.z), Mathf.Round(_data.rotation.w));
+        position = _data.position;
+        rotation = _data.rotation;
+        blockType = _data.blockType;
     }
 
     public string Serialize()
@@ -54,10 +57,15 @@ public class Vehicle
     [SerializeField]
     public BlocData[] blocks;
 
+    public string vehicleName;
+
+    public bool hasBeenLoaded = false;
+
     public Vehicle(int _size)
     {
         vehicleSize = _size;
         blocks = new BlocData[_size];
+        vehicleName = "";
     }
 
     public Vehicle()
@@ -67,7 +75,7 @@ public class Vehicle
 
     public string Serialize()
     {
-        string result = vehicleSize.ToString();
+        string result = vehicleName + "[" + vehicleSize.ToString();
         for (int i = 0; i < vehicleSize; i++)
         {
             result += "[" + blocks[i].Serialize();
@@ -79,12 +87,13 @@ public class Vehicle
     {
         string[] dataSplit = _data.Split('[');
 
-        vehicleSize = int.Parse(dataSplit[0]);
+        vehicleName = dataSplit[0];
+        vehicleSize = int.Parse(dataSplit[1]);
         blocks = new BlocData[vehicleSize];
 
-        for (int i = 1; i < dataSplit.Length; i++)
+        for (int i = 2; i < dataSplit.Length; i++)
         {
-            blocks[i - 1].Deserialize(dataSplit[i]);
+            blocks[i - 2].Deserialize(dataSplit[i]);
         }
     }
 
@@ -92,7 +101,7 @@ public class Vehicle
     {
         Creator creator = GameObject.FindObjectOfType<Creator>();
 
-        for (int i = 0; i < vehicleSize - 1; i++)
+        for (int i = 0; i < vehicleSize; i++)
         {
             GameObject vehiclePart = GameObject.Instantiate(creator.prefabUtils.blocks[blocks[i].blockType], _parent);
             vehiclePart.transform.localPosition = blocks[i].position;

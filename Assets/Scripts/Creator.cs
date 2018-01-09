@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 using Cinemachine;
 
@@ -29,6 +30,14 @@ public class Creator : MonoBehaviour {
     string savefileName = "/save.txt";
     public float mouseScrollSensitivity;
 
+    bool hasTheVehicleBeenLoaded = false;
+    int vehicleSelectedIndex = -1;
+    string vehicleSelectedName = "";
+
+    public GameObject saveScreen;
+    public GameObject loadScreen;
+    Vehicle vehicleToLoad = new Vehicle();
+
     void Start () {
         core = Instantiate(prefabUtils.coreBlock, vehicle.transform);
         CreatePreviewBlock();
@@ -36,6 +45,9 @@ public class Creator : MonoBehaviour {
 
     void Update () {
         if (!GameState.isInCreatorMode)
+            return;
+
+        if (saveScreen.activeInHierarchy)
             return;
 
         if (currentlySelectedBlock == null)
@@ -155,6 +167,8 @@ public class Creator : MonoBehaviour {
         {
             for (int i = 1; i < vehicle.transform.childCount; i++)
                 Destroy(vehicle.transform.GetChild(i).gameObject);
+
+            hasTheVehicleBeenLoaded = false;
         }
     }
 
@@ -173,42 +187,111 @@ public class Creator : MonoBehaviour {
     public void SaveButton()
     {
         Destroy(currentlySelectedBlock);
+        if (!hasTheVehicleBeenLoaded)
+        {
+            // open save screen
+            Camera.main.GetComponent<Cinemachine.CinemachineBrain>().enabled = false;
+            saveScreen.SetActive(true);
+        }
+        else
+        {
+            SaveValidated();
+        }
+
+    }
+
+    public void SaveValidated()
+    {
+        if (vehicle == null)
+            return;
+
         Vehicle vehicleToSave = new Vehicle(vehicle.transform.childCount - 1);
+
+        vehicleToSave.vehicleName = saveScreen.transform.GetChild(saveScreen.transform.childCount - 1).GetComponent<Text>().text;
 
         for (int i = 1; i < vehicle.transform.childCount; i++)
         {
             vehicleToSave.blocks[i - 1].SetData(vehicle.transform.GetChild(i).GetComponent<Bloc>().data);
         }
 
-        StreamWriter sw = File.CreateText(Application.persistentDataPath + savefileName);
-        Debug.Log(Application.persistentDataPath + savefileName);
-        sw.WriteLine(vehicleToSave.Serialize());
-        sw.Close();
+        if (hasTheVehicleBeenLoaded)
+        {
+            string[] vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
+            vehicleToSave.vehicleName = vehicleSelectedName;
+            vehiclesLoaded[vehicleSelectedIndex] = vehicleToSave.Serialize();
+
+            StreamWriter sw = File.CreateText(Application.persistentDataPath + savefileName);
+            Debug.Log(Application.persistentDataPath + savefileName);
+            for (int i = 0; i < vehiclesLoaded.Length; i++)
+                sw.WriteLine(vehiclesLoaded[i]);
+            sw.Close();
+        }
+        else
+        {
+            StreamWriter sw = File.AppendText(Application.persistentDataPath + savefileName);
+            Debug.Log(Application.persistentDataPath + savefileName);
+            sw.WriteLine(vehicleToSave.Serialize());
+            sw.Close();
+        }
+       
+        if (saveScreen.activeInHierarchy)
+        {
+            Camera.main.GetComponent<Cinemachine.CinemachineBrain>().enabled = true;
+            saveScreen.SetActive(false);
+        }
     }
 
+    // Open load screen
     public void LoadButton()
     {
         Destroy(currentlySelectedBlock);
+        for (int i = 1; i < loadScreen.transform.childCount; i++)
+            Destroy(loadScreen.transform.GetChild(i).gameObject);
+        loadScreen.SetActive(true);
 
+        // read all file, creates buttons accordingly
         if (!File.Exists(Application.persistentDataPath + savefileName))
             return;
 
-        Debug.Log("Start load");
-        
-        Vehicle vehicleToLoad = new Vehicle();
-        vehicleToLoad.Deserialize(File.ReadAllText(Application.persistentDataPath + savefileName));
+        string[] vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
+
+        for (int i = 0; i < vehiclesLoaded.Length; i++)
+        {
+            GameObject button = Instantiate(prefabUtils.vehicleButton, loadScreen.transform);
+            vehicleToLoad.Deserialize(vehiclesLoaded[i]);
+            button.GetComponentInChildren<Text>().text = vehicleToLoad.vehicleName;
+            int temp = i;
+            button.GetComponent<Button>().onClick.AddListener(() => { LoadValidated(temp); });
+            if (i < 8)
+                button.transform.localPosition = new Vector2(-100.0f, 110 - 30.0f*i);
+            else
+                button.transform.localPosition = new Vector2(100.0f, 110 - 30.0f * (i - 8));
+        }
+    }
+
+    // Load the selected vehicle
+    void LoadValidated(int _indexButton)
+    {
+        string[] vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
+
+        vehicleToLoad.Deserialize(vehiclesLoaded[_indexButton]);
 
         ResetButton();
         vehicleToLoad.CreateVehicle(vehicle.transform);
+        hasTheVehicleBeenLoaded = true;
+        vehicleSelectedIndex = _indexButton;
+        vehicleSelectedName = vehicleToLoad.vehicleName;
+        loadScreen.SetActive(false);
     }
 
     private void CreatePreviewBlock()
-    {
+     {
         currentlySelectedBlock = Instantiate(prefabUtils.blocks[currentlySelectedBlockIndex], Vector3.zero, Quaternion.identity, vehicle.transform);
         foreach (Collider c in currentlySelectedBlock.GetComponentsInChildren<Collider>())
             c.enabled = false;
         Color oldColor = currentlySelectedBlock.GetComponent<MeshRenderer>().material.color;
         currentlySelectedBlock.GetComponent<MeshRenderer>().material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.3f);
+        //currentlySelectedBlock.GetComponent<Bloc>().data.blockType = currentlySelectedBlockIndex;
         currentlySelectedBlock.SetActive(false);
     }
 

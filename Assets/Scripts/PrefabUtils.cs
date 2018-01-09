@@ -24,6 +24,8 @@ public class PrefabUtils : MonoBehaviour {
         //}
     }
 
+    public GameObject vehicleButton;
+
     public Vector3 GetExtents(int _index)
     {
         return new Vector3(blocks[_index].GetComponent<BoxCollider>().size.x * blocks[_index].transform.localScale.x,
