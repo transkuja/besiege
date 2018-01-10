@@ -50,12 +50,18 @@ public class Creator : MonoBehaviour {
         if (saveScreen.activeInHierarchy)
             return;
 
-        if (currentlySelectedBlock == null)
-            return;
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         hasHitAPotentialTarget = Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Block"));
+        if (Input.GetMouseButtonDown(1) && hasHitAPotentialTarget)
+        {
+            if (hit.collider.transform.tag != "Core")
+                Destroy(hit.collider.transform.gameObject);
+        }
+
+        if (currentlySelectedBlock == null)
+            return;
 
         if (hasHitAPotentialTarget)
         {
@@ -111,12 +117,6 @@ public class Creator : MonoBehaviour {
         {
             // Deactivate preview if no potential target
             currentlySelectedBlock.SetActive(false);
-        }
-
-        if (Input.GetMouseButtonDown(1) && hasHitAPotentialTarget)
-        {
-            if (hit.collider.transform.tag != "Core")
-                Destroy(hit.collider.transform.gameObject);
         }
 
         freelookCameraCreator.m_XAxis.Value += -Input.GetAxisRaw("Horizontal");

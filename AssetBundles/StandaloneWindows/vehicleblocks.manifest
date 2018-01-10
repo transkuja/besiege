@@ -1,0 +1,42 @@
+ManifestFileVersion: 0
+CRC: 3243615389
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5936206f66698793a685df5f342e85cb
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9ef786098e70ad90e2c5ee3537733b96
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: dd7fff93fd705d94985f7207d781b347, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 0e6b31d472e917744af1ced0031841e4, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/Block2.prefab
+- Assets/Prefabs/Block3.prefab
+- Assets/Prefabs/Block1.prefab
+- Assets/Prefabs/BlockReactor.prefab
+- Assets/Prefabs/Block4.prefab
+Dependencies: []
