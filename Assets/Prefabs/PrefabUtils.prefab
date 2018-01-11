@@ -52,4 +52,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coreBlock: {fileID: 1779745429605190, guid: 3a9df1c26d9809640bd5c8344a451968, type: 2}
-  block1: {fileID: 1779745429605190, guid: 9ff63cd712c536c478f7084f2dfcedf7, type: 2}
+  blocks:
+  - {fileID: 1779745429605190, guid: 9ff63cd712c536c478f7084f2dfcedf7, type: 2}
+  - {fileID: 1779745429605190, guid: 5d4283f2ae955284ebbc3173f1075ffb, type: 2}
+  - {fileID: 1779745429605190, guid: b04c4067484bd1c4687be0ed90c8536f, type: 2}
+  - {fileID: 1779745429605190, guid: 2e96f40df3f059a4ca6027133ec06b35, type: 2}
+  - {fileID: 1467652397084260, guid: 5e4bdb5c6de71654dbacc838211109ae, type: 2}
+  - {fileID: 1467652397084260, guid: 4fa4ff4922a005344ba016550f4c12f6, type: 2}
+  vehicleButton: {fileID: 1891211725689272, guid: 3103f1cdec39b5a418b1b333a80d7524,
+    type: 2}

@@ -37,7 +37,7 @@ public class VehicleController : MonoBehaviour {
         if (!GameState.isInCreatorMode && isInitialized && canMove)
         {
             float oldVelocityY = rb.velocity.y;
-            rb.AddForce((Input.GetAxisRaw("Vertical") * transform.forward) * speed);
+            rb.AddForce((Input.GetAxisRaw("Vertical") * transform.forward) * speed, ForceMode.Acceleration);
 
             Vector3 newVelocity;
             newVelocity = Vector3.ClampMagnitude(new Vector3(rb.velocity.x, 0, rb.velocity.z) 
@@ -49,7 +49,7 @@ public class VehicleController : MonoBehaviour {
 
             if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.1f)
             {
-                rb.AddTorque(Input.GetAxisRaw("Horizontal") * transform.up * angularSpeed);
+                rb.AddTorque(Input.GetAxisRaw("Horizontal") * transform.up * angularSpeed, ForceMode.Acceleration);
                 rb.angularVelocity = Vector3.ClampMagnitude(rb.angularVelocity, 5);
             }
             else

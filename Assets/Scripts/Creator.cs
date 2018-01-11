@@ -70,10 +70,20 @@ public class Creator : MonoBehaviour {
             if (prefabUtils.blocks[currentlySelectedBlockIndex].GetComponent<BoxCollider>() != null)
             {
                 Vector3 newPosition = GetPosition();
-                if (prefabUtils.blocks[currentlySelectedBlockIndex].transform.childCount > 0) // Ugly, need a better handling of reactors post 1st proto
+                if (prefabUtils.blocks[currentlySelectedBlockIndex].transform.GetComponent<ZeroGBlock>() != null)
                 {
                     // Check if there's nothing under the zero gravity module we want to put
                     if (Physics.Raycast(newPosition, Vector3.down, prefabUtils.GetExtents(currentlySelectedBlockIndex).y + 0.5f))
+                    {
+                        currentlySelectedBlock.SetActive(false);
+                        return;
+                    }
+                }
+
+                if (prefabUtils.blocks[currentlySelectedBlockIndex].transform.GetComponent<BoostBlock>() != null)
+                {
+                    // Check if there's nothing behind the boost module we want to put
+                    if (Physics.Raycast(newPosition, -transform.forward, prefabUtils.GetExtents(currentlySelectedBlockIndex).z + 0.5f))
                     {
                         currentlySelectedBlock.SetActive(false);
                         return;
