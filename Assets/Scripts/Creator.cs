@@ -40,6 +40,8 @@ public class Creator : MonoBehaviour {
 
     Vehicle vehicleToLoad = new Vehicle();
 
+    bool saveNeeded = false;
+
     void Start () {
         int nbButtons = 0;
         foreach (GameObject block in prefabUtils.blocks)
@@ -241,7 +243,7 @@ public class Creator : MonoBehaviour {
 
     }
 
-    public void SaveValidated()
+    public void SaveValidated(string forcedName = "")
     {
         if (vehicle == null)
             return;
@@ -262,7 +264,6 @@ public class Creator : MonoBehaviour {
             vehiclesLoaded[vehicleSelectedIndex] = vehicleToSave.Serialize();
 
             StreamWriter sw = File.CreateText(Application.persistentDataPath + savefileName);
-            Debug.Log(Application.persistentDataPath + savefileName);
             for (int i = 0; i < vehiclesLoaded.Length; i++)
                 sw.WriteLine(vehiclesLoaded[i]);
             sw.Close();
@@ -270,8 +271,7 @@ public class Creator : MonoBehaviour {
         else
         {
             StreamWriter sw = File.AppendText(Application.persistentDataPath + savefileName);
-            Debug.Log(Application.persistentDataPath + savefileName);
-            sw.WriteLine(vehicleToSave.Serialize());
+            sw.WriteLine(forcedName + vehicleToSave.Serialize());
             sw.Close();
         }
        
@@ -291,10 +291,14 @@ public class Creator : MonoBehaviour {
         loadScreen.SetActive(true);
 
         // read all file, creates buttons accordingly
+        string[] vehiclesLoaded;
         if (!File.Exists(Application.persistentDataPath + savefileName))
-            return;
-
-        string[] vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
+        {
+            vehiclesLoaded = new string[1];
+            vehiclesLoaded[0] = "Default[8[1|0|0|0|0|0|1|4[0|1|0|0|0|0|1|4[-1.000004|-1.519918E-06|0|0|0|0|1|4[-2.000004|-1.519918E-06|0|0|0|0|1|0[1.999999|-3.248453E-06|0|0|0|0|1|0[-1.400709E-06|0.9999968|-1.5|0|0|0|1|1[0.9999986|-1.329184E-05|-1.499993|0|0|0|1|1[-1.000004|-1.871726E-05|-1.499988|0|0|7.047312E-18|1|1";
+        }
+        else
+            vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
 
         for (int i = 0; i < vehiclesLoaded.Length; i++)
         {
@@ -328,9 +332,15 @@ public class Creator : MonoBehaviour {
     // Load a vehicle at start while the player has not saved his/her own
     void LoadVehicleOnStart()
     {
+        string[] vehiclesLoaded;
         if (!File.Exists(Application.persistentDataPath + savefileName))
-            return;
-        string[] vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
+        {
+            vehiclesLoaded = new string[1];
+            vehiclesLoaded[0] = "Default[8[1|0|0|0|0|0|1|4[0|1|0|0|0|0|1|4[-1.000004|-1.519918E-06|0|0|0|0|1|4[-2.000004|-1.519918E-06|0|0|0|0|1|0[1.999999|-3.248453E-06|0|0|0|0|1|0[-1.400709E-06|0.9999968|-1.5|0|0|0|1|1[0.9999986|-1.329184E-05|-1.499993|0|0|0|1|1[-1.000004|-1.871726E-05|-1.499988|0|0|7.047312E-18|1|1";
+            saveNeeded = true;
+        }
+        else
+            vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
 
         // Create vehicle at start if there's only the one by default saved
         if (vehiclesLoaded.Length != 1)
@@ -343,6 +353,12 @@ public class Creator : MonoBehaviour {
         hasTheVehicleBeenLoaded = true;
         vehicleSelectedIndex = 0;
         vehicleSelectedName = vehicleToLoad.vehicleName;
+
+        if (saveNeeded)
+        {
+            hasTheVehicleBeenLoaded = false;
+            SaveValidated("Default");
+        }
     }
 
     private void CreatePreviewBlock()
@@ -356,6 +372,10 @@ public class Creator : MonoBehaviour {
             }
 
         }
+
+        if (currentlySelectedBlock == null)
+            return;
+
         foreach (Collider c in currentlySelectedBlock.GetComponentsInChildren<Collider>())
             c.enabled = false;
         Color oldColor = currentlySelectedBlock.GetComponent<MeshRenderer>().material.color;

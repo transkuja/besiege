@@ -65,4 +65,18 @@ public class PrefabUtils : MonoBehaviour {
         blocks = new List<GameObject>();
         blocks.AddRange(blocksFromBundle);
     }
+
+    public GameObject GetBlockFromType(int _blockType)
+    {
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            if (blocks[i].GetComponent<Bloc>().data.blockType == _blockType)
+            {
+                return blocks[i];
+            }
+
+        }
+
+        return null;
+    }
 }
