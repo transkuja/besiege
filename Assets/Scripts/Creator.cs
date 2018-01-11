@@ -36,6 +36,8 @@ public class Creator : MonoBehaviour {
 
     public GameObject saveScreen;
     public GameObject loadScreen;
+    public GameObject lvlSelectionScreen;
+
     Vehicle vehicleToLoad = new Vehicle();
 
     void Start () {
