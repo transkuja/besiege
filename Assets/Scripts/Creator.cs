@@ -41,6 +41,8 @@ public class Creator : MonoBehaviour {
     void Start () {
         core = Instantiate(prefabUtils.coreBlock, vehicle.transform);
         CreatePreviewBlock();
+
+        LoadVehicleOnStart();
     }
 
     void Update () {
@@ -282,6 +284,26 @@ public class Creator : MonoBehaviour {
         vehicleSelectedIndex = _indexButton;
         vehicleSelectedName = vehicleToLoad.vehicleName;
         loadScreen.SetActive(false);
+    }
+
+    // Load a vehicle at start while the player has not saved his/her own
+    void LoadVehicleOnStart()
+    {
+        if (!File.Exists(Application.persistentDataPath + savefileName))
+            return;
+        string[] vehiclesLoaded = File.ReadAllLines(Application.persistentDataPath + savefileName);
+
+        // Create vehicle at start if there's only the one by default saved
+        if (vehiclesLoaded.Length != 1)
+            return;
+
+        vehicleToLoad.Deserialize(vehiclesLoaded[0]);
+
+        ResetButton();
+        vehicleToLoad.CreateVehicle(vehicle.transform);
+        hasTheVehicleBeenLoaded = true;
+        vehicleSelectedIndex = 0;
+        vehicleSelectedName = vehicleToLoad.vehicleName;
     }
 
     private void CreatePreviewBlock()

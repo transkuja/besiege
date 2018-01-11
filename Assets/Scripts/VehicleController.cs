@@ -21,6 +21,8 @@ public class VehicleController : MonoBehaviour {
             canMove = true;
 
         nbBoosters = GetComponentsInChildren<BoostBlock>().Length;
+
+
     }
 
     public void InitController(CinemachineFreeLook _cameraRef)
