@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23508364326641374}
   - component: {fileID: 114857808545875290}
   m_Layer: 8
-  m_Name: BlockReactor
+  m_Name: BlockBoost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 33986415846234252}
   - component: {fileID: 136990665939391530}
   - component: {fileID: 23357150844095268}
-  - component: {fileID: 114173905465615332}
+  - component: {fileID: 114576585974982888}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -55,13 +55,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1489423048314660}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: -0.5}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 4715673232078868}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!4 &4715673232078868
 Transform:
   m_ObjectHideFlags: 1
@@ -69,7 +69,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1467652397084260}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 28.401615, y: -2.4, z: -18.636822}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4613720941337932}
@@ -89,7 +89,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 44de7d9883f596c4392a19e695016630, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,7 +121,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 6451dc9b869d43b4a8bcfcc94e2c5ce6, type: 2}
+  - {fileID: 2100000, guid: 61fc71565a25c504e9c02a843d44d5e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -166,7 +166,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114173905465615332
+--- !u!114 &114576585974982888
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1489423048314660}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e6b31d472e917744af1ced0031841e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 4184dae6d8a71404dac9cd4a8174a058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114857808545875290
@@ -191,7 +191,7 @@ MonoBehaviour:
   data:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0, w: 0}
-    blockType: 4
+    blockType: 5
 --- !u!136 &136990665939391530
 CapsuleCollider:
   m_ObjectHideFlags: 1

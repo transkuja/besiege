@@ -79,7 +79,7 @@ public class Creator : MonoBehaviour {
                 }
 
                 // Makes sure we do not something under a zero gravity module
-                if (hit.collider.GetComponentInChildren<ZeroGBlock>() != null)
+                if (hit.collider.GetComponentInChildren<ZeroGBlock>() != null || hit.collider.GetComponentInChildren<BoostBlock>() != null)
                 {
                     currentlySelectedBlock.SetActive(false);
                     return;

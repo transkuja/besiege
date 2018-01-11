@@ -6,16 +6,21 @@ using Cinemachine;
 public class VehicleController : MonoBehaviour {
     Rigidbody rb;
     float maxSpeed = 20.0f;
+    float maxSpeedWithBoost = 30.0f;
     public float speed = 20.0f;
     public float angularSpeed = 5.0f;
     public CinemachineFreeLook freelookCamera;
     bool isInitialized = false;
     bool canMove = false;
+    int nbBoosters = 0;
+    float boostStrengthPerBooster = 5.0f;
 
     void Start () {
         rb = GetComponent<Rigidbody>();
         if (GetComponentsInChildren<ZeroGBlock>().Length > 0)
             canMove = true;
+
+        nbBoosters = GetComponentsInChildren<BoostBlock>().Length;
     }
 
     public void InitController(CinemachineFreeLook _cameraRef)
@@ -31,7 +36,12 @@ public class VehicleController : MonoBehaviour {
         {
             float oldVelocityY = rb.velocity.y;
             rb.AddForce((Input.GetAxisRaw("Vertical") * transform.forward) * speed);
-            Vector3 newVelocity = Vector3.ClampMagnitude(new Vector3(rb.velocity.x, 0, rb.velocity.z), maxSpeed);
+
+            Vector3 newVelocity;
+            newVelocity = Vector3.ClampMagnitude(new Vector3(rb.velocity.x, 0, rb.velocity.z) 
+                    + (Input.GetKey(KeyCode.Space) ? transform.forward * GameState.boostStrength : Vector3.zero),
+                Input.GetKey(KeyCode.Space) ? maxSpeed + nbBoosters * boostStrengthPerBooster : maxSpeed);
+
             rb.velocity = newVelocity + oldVelocityY * Vector3.up;
 
 
