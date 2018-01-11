@@ -103,7 +103,7 @@ public class Vehicle
 
         for (int i = 0; i < vehicleSize; i++)
         {
-            GameObject vehiclePart = GameObject.Instantiate(creator.prefabUtils.blocks[blocks[i].blockType], _parent);
+            GameObject vehiclePart = GameObject.Instantiate(creator.prefabUtils.GetBlockFromType(blocks[i].blockType), _parent);
             vehiclePart.transform.localPosition = blocks[i].position;
             vehiclePart.transform.localRotation = blocks[i].rotation;
             vehiclePart.GetComponent<Bloc>().data.SetData(blocks[i]);
