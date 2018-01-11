@@ -191,7 +191,7 @@ MonoBehaviour:
   data:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0, w: 0}
-    blockType: 4
+    blockType: 0
 --- !u!136 &136990665939391530
 CapsuleCollider:
   m_ObjectHideFlags: 1

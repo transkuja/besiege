@@ -36,10 +36,36 @@ public class Creator : MonoBehaviour {
     public GameObject saveScreen;
     public GameObject loadScreen;
     public GameObject lvlSelectionScreen;
+    public GameObject blocksPanel;
 
     Vehicle vehicleToLoad = new Vehicle();
 
     void Start () {
+        int nbButtons = 0;
+        foreach (GameObject block in prefabUtils.blocks)
+        {
+            GameObject blockButton = Instantiate(prefabUtils.blockButton, blocksPanel.transform);
+            int temp = block.GetComponent<Bloc>().data.blockType;
+            blockButton.GetComponent<Button>().onClick.AddListener(() => { ChangeBlock(temp); });
+
+            if (block.GetComponentInChildren<ZeroGBlock>() != null)
+            {
+                blockButton.GetComponentInChildren<Text>().text = "ZeroG Module";
+                blockButton.transform.localPosition = new Vector2(40.0f, 90.0f);
+            }
+            else if (block.GetComponentInChildren<BoostBlock>() != null)
+            {
+                blockButton.GetComponentInChildren<Text>().text = "Boost Module";
+                blockButton.transform.localPosition = new Vector2(110.0f, 90.0f);
+            }
+            else
+            {
+                blockButton.GetComponentInChildren<Text>().text = "Block" + nbButtons;
+                blockButton.transform.localPosition = new Vector2(40.0f + nbButtons * 70.0f, 30.0f);
+                nbButtons++;
+            }
+        }
+
         Instantiate(prefabUtils.coreBlock, vehicle.transform);
         CreatePreviewBlock();
 
@@ -321,12 +347,19 @@ public class Creator : MonoBehaviour {
 
     private void CreatePreviewBlock()
      {
-        currentlySelectedBlock = Instantiate(prefabUtils.blocks[currentlySelectedBlockIndex], Vector3.zero, Quaternion.identity, vehicle.transform);
+        foreach (GameObject go in prefabUtils.blocks)
+        {
+            if (go.GetComponent<Bloc>().data.blockType == currentlySelectedBlockIndex)
+            {
+                currentlySelectedBlock = Instantiate(go, Vector3.zero, Quaternion.identity, vehicle.transform);
+                break;
+            }
+
+        }
         foreach (Collider c in currentlySelectedBlock.GetComponentsInChildren<Collider>())
             c.enabled = false;
         Color oldColor = currentlySelectedBlock.GetComponent<MeshRenderer>().material.color;
         currentlySelectedBlock.GetComponent<MeshRenderer>().material.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.3f);
-        //currentlySelectedBlock.GetComponent<Bloc>().data.blockType = currentlySelectedBlockIndex;
         currentlySelectedBlock.SetActive(false);
     }
 
