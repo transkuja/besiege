@@ -10,10 +10,13 @@ public class PrefabUtils : MonoBehaviour {
     public GameObject coreBlock;
 
     public List<GameObject> blocks;
+    bool assetBundleLoaded = false;
 
     private void Awake()
     {
-        StartCoroutine(LoadBlocks());
+        DontDestroyOnLoad(gameObject);
+        if (!assetBundleLoaded)
+            StartCoroutine(LoadBlocks());
     }
 
     public GameObject vehicleButton;
@@ -64,6 +67,7 @@ public class PrefabUtils : MonoBehaviour {
         GameObject[] blocksFromBundle = bundle.LoadAllAssets<GameObject>();
         blocks = new List<GameObject>();
         blocks.AddRange(blocksFromBundle);
+        assetBundleLoaded = true;
     }
 
     public GameObject GetBlockFromType(int _blockType)

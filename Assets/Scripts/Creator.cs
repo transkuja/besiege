@@ -43,6 +43,8 @@ public class Creator : MonoBehaviour {
     bool saveNeeded = false;
 
     void Start () {
+        prefabUtils = GameObject.FindObjectOfType<PrefabUtils>();
+
         int nbButtons = 0;
         foreach (GameObject block in prefabUtils.blocks)
         {

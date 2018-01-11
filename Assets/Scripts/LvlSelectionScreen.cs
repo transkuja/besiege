@@ -9,7 +9,7 @@ public class LvlSelectionScreen : MonoBehaviour {
     public PrefabUtils prefabUtils;
 
     void Start () {
-
+        prefabUtils = GameObject.FindObjectOfType<PrefabUtils>();
         for (int i = 1; i < SceneManager.sceneCountInBuildSettings; i++)
         {
             GameObject button = Instantiate(prefabUtils.vehicleButton, transform);
