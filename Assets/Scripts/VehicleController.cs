@@ -6,7 +6,6 @@ using Cinemachine;
 public class VehicleController : MonoBehaviour {
     Rigidbody rb;
     float maxSpeed = 20.0f;
-    float maxSpeedWithBoost = 30.0f;
     public float speed = 20.0f;
     public float angularSpeed = 5.0f;
     public CinemachineFreeLook freelookCamera;
@@ -14,6 +13,8 @@ public class VehicleController : MonoBehaviour {
     bool canMove = false;
     int nbBoosters = 0;
     float boostStrengthPerBooster = 5.0f;
+
+    public Creator creator;
 
     void Start () {
         rb = GetComponent<Rigidbody>();
@@ -25,12 +26,21 @@ public class VehicleController : MonoBehaviour {
 
     }
 
-    public void InitController(CinemachineFreeLook _cameraRef)
+    public void InitController(CinemachineFreeLook _cameraRef, Creator _creatorComp)
     {
         freelookCamera = _cameraRef;
         freelookCamera.Follow = transform;
         freelookCamera.LookAt = transform;
+        creator = _creatorComp;
         isInitialized = true;
+    }
+
+    private void Update()
+    {
+        if (transform.position.y < -10.0f)
+        {
+            creator.BackToCreation();
+        }
     }
 
     void FixedUpdate () {

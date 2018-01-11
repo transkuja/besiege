@@ -13,7 +13,6 @@ public class Creator : MonoBehaviour {
     public CinemachineFreeLook freelookCameraCreator;
     public CinemachineFreeLook freelookCameraVehicle;
 
-    GameObject core;
     Ray ray;
     bool hasHitAPotentialTarget = false;
 
@@ -41,7 +40,7 @@ public class Creator : MonoBehaviour {
     Vehicle vehicleToLoad = new Vehicle();
 
     void Start () {
-        core = Instantiate(prefabUtils.coreBlock, vehicle.transform);
+        Instantiate(prefabUtils.coreBlock, vehicle.transform);
         CreatePreviewBlock();
 
         LoadVehicleOnStart();
@@ -50,7 +49,7 @@ public class Creator : MonoBehaviour {
     void Update () {
         if (!GameState.isInCreatorMode)
             return;
-
+            
         if (saveScreen.activeInHierarchy)
             return;
 
@@ -168,7 +167,7 @@ public class Creator : MonoBehaviour {
     {
         vehicle.GetComponent<Rigidbody>().useGravity = true;
         vehicle.AddComponent<VehicleController>();
-        vehicle.GetComponent<VehicleController>().InitController(freelookCameraVehicle);
+        vehicle.GetComponent<VehicleController>().InitController(freelookCameraVehicle, this);
         freelookCameraCreator.gameObject.SetActive(false);
         freelookCameraVehicle.gameObject.SetActive(true);
         GameState.isInCreatorMode = false;
@@ -191,6 +190,8 @@ public class Creator : MonoBehaviour {
         GameState.isInCreatorMode = true;
         enabled = true;
         vehicle.GetComponent<Rigidbody>().useGravity = false;
+        vehicle.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        vehicle.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         Destroy(vehicle.GetComponent<VehicleController>());
         vehicle.transform.localPosition = Vector3.zero;
         vehicle.transform.localRotation = Quaternion.identity;
